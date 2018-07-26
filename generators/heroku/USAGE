@@ -1,8 +1,9 @@
 Description:
     Initializes a Heroku app and generates a WAR file that is ready to push to Heroku.
+    Adds the spring-cloud-heroku-connector dependency to Maven / Gradle as appropriate.
 
 Example:
-    yo jhipster:heroku
+    jhipster heroku
 
     This will create:
         Procfile

@@ -51,7 +51,7 @@
         },
         {
             "fieldName": "lastOperationDate",
-            "fieldType": "ZonedDateTime"
+            "fieldType": "Instant"
         },
         {
             "fieldName": "active",
@@ -76,5 +76,8 @@
     "changelogDate": "20150805124838",
     "dto": "mapstruct",
     "pagination": "no",
-    "service": "serviceImpl"
+    "jpaMetamodelFiltering": true,
+    "service": "serviceImpl",
+    "angularJSSuffix": "mySuffix",
+    "clientRootFolder": "test-root"
 }

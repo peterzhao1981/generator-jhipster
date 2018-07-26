@@ -25,6 +25,7 @@
             "relationshipName": "userOneToMany",
             "otherEntityName": "user",
             "relationshipType": "many-to-one",
+            "relationshipValidateRules": "required",
             "otherEntityField": "login"
         },
         {
@@ -53,5 +54,7 @@
     "changelogDate": "20160208210109",
     "dto": "no",
     "service": "no",
+    "jpaMetamodelFiltering": true,
+    "angularJSSuffix": "mySuffixAlt",
     "pagination": "no"
 }

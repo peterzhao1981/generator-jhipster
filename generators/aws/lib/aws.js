@@ -1,25 +1,26 @@
-'use strict';
-var S3 = require('./s3.js'),
-    Rds = require('./rds.js'),
-    shelljs = require('shelljs'),
-    Eb = require('./eb.js');
+const shelljs = require('shelljs');
+const S3 = require('./s3.js');
+const Rds = require('./rds.js');
+const Eb = require('./eb.js');
+const Iam = require('./iam.js');
 
-var Aws, generator;
+let Aws;
+let generator;
 
-var AwsFactory = module.exports = function AwsFactory(generatorRef, cb) {
+const AwsFactory = module.exports = function AwsFactory(generatorRef, cb) {
     generator = generatorRef;
     try {
-        Aws = require('aws-sdk');
+        Aws = require('aws-sdk'); // eslint-disable-line
         cb();
     } catch (e) {
-        generator.log('Installing AWS dependencies into your JHipster folder');
-        var installCommand = 'yarn add aws-sdk progress uuid --modules-folder node_modules/generator-jhipster/node_modules';
+        generator.log('Installing AWS dependencies');
+        let installCommand = 'yarn add aws-sdk progress uuid';
         if (generator.config.get('clientPackageManager') === 'npm') {
-            installCommand = 'npm install aws-sdk progress uuid --prefix node_modules/generator-jhipster';
+            installCommand = 'npm install aws-sdk progress uuid --save';
         }
-        shelljs.exec(installCommand, {silent: true}, function (code, msg, err) {
-            if (code !== 0) generator.error('Something went wrong while installing:\n' + err);
-            Aws = require('aws-sdk');
+        shelljs.exec(installCommand, { silent: false }, (code) => {
+            if (code !== 0) generator.error('Something went wrong while installing the aws-sdk\n');
+            Aws = require('aws-sdk'); // eslint-disable-line
             cb();
         });
     }
@@ -39,4 +40,8 @@ AwsFactory.prototype.getRds = function getRds() {
 
 AwsFactory.prototype.getEb = function getEb() {
     return new Eb(Aws, generator);
+};
+
+AwsFactory.prototype.getIam = function getIa() {
+    return new Iam(Aws, generator);
 };

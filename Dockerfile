@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 RUN \
   # configure the "jhipster" user
@@ -6,41 +6,37 @@ RUN \
   useradd jhipster -s /bin/bash -m -g jhipster -G sudo && \
   echo 'jhipster:jhipster' |chpasswd && \
   mkdir /home/jhipster/app && \
-
   # install open-jdk 8
   apt-get update && \
   apt-get install -y openjdk-8-jdk && \
-
   # install utilities
   apt-get install -y \
-     wget \
-     curl \
-     vim \
-     git \
-     zip \
-     bzip2 \
-     fontconfig \
-     python \
-     g++ \
-     build-essential && \
+    wget \
+    curl \
+    vim \
+    git \
+    zip \
+    bzip2 \
+    fontconfig \
+    python \
+    g++ \
+    libpng-dev \
+    build-essential && \
 
   # install node.js
-  curl -sL https://deb.nodesource.com/setup_6.x | bash && \
+  curl -sL https://deb.nodesource.com/setup_8.x | bash && \
   apt-get install -y nodejs && \
-
   # upgrade npm
   npm install -g npm && \
-
-  # install yeoman bower gulp yarn
-  npm install -g \
-    yo \
-    bower \
-    gulp-cli \
-    yarn && \
-
+  # install yarn
+  npm install -g yarn && \
+  su -c "yarn config set prefix /home/jhipster/.yarn-global" jhipster && \
+  # install yeoman
+  su -c "yarn global add yo" jhipster && \
   # cleanup
   apt-get clean && \
   rm -rf \
+    /home/jhipster/.cache/ \
     /var/lib/apt/lists/* \
     /tmp/* \
     /var/tmp/*
@@ -49,22 +45,26 @@ RUN \
 COPY . /home/jhipster/generator-jhipster
 
 RUN \
-  # install jhipster
-  npm install -g /home/jhipster/generator-jhipster && \
-
   # fix jhipster user permissions
   chown -R jhipster:jhipster \
     /home/jhipster \
     /usr/lib/node_modules && \
-
+  # install jhipster
+  rm -Rf /home/jhipster/generator-jhipster/node_modules \
+    /home/jhipster/generator-jhipster/yarn.lock \
+    /home/jhipster/generator-jhipster/yarn-error.log && \
+  su -c "cd /home/jhipster/generator-jhipster && yarn install" jhipster && \
+  su -c "yarn global add file:/home/jhipster/generator-jhipster" jhipster && \
   # cleanup
   rm -rf \
+    /home/jhipster/.cache/ \
     /var/lib/apt/lists/* \
     /tmp/* \
     /var/tmp/*
 
 # expose the working directory, the Tomcat port, the BrowserSync ports
 USER jhipster
+ENV PATH $PATH:/usr/bin:/home/jhipster/.yarn-global/bin:/home/jhipster/.yarn/bin:/home/jhipster/.config/yarn/global/node_modules/.bin
 WORKDIR "/home/jhipster/app"
 VOLUME ["/home/jhipster/app"]
 EXPOSE 8080 9000 3001

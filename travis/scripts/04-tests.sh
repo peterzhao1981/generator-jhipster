@@ -2,6 +2,16 @@
 set -e
 
 #-------------------------------------------------------------------------------
+# Display environment information like JDK version
+#-------------------------------------------------------------------------------
+cd "$APP_FOLDER"
+if [ -f "mvnw" ]; then
+    ./mvnw enforcer:display-info
+elif [ -f "gradlew" ]; then
+    ./gradlew -v
+fi
+
+#-------------------------------------------------------------------------------
 # Check Javadoc generation
 #-------------------------------------------------------------------------------
 if [ -f "mvnw" ]; then
@@ -13,27 +23,28 @@ fi
 #-------------------------------------------------------------------------------
 # Launch UAA tests
 #-------------------------------------------------------------------------------
-if [ "$JHIPSTER" == "app-ng2-gateway-uaa" ]; then
-    cd "$HOME"/uaa
+if [[ "$JHIPSTER" == *"uaa"* ]]; then
+    cd "$UAA_APP_FOLDER"
     ./mvnw test
 fi
 
 #-------------------------------------------------------------------------------
 # Launch tests
 #-------------------------------------------------------------------------------
-cd "$HOME"/app
+cd "$APP_FOLDER"
 if [ -f "mvnw" ]; then
     ./mvnw test \
-        -Dlogging.level.io.github.jhipster.sample=ERROR \
-        -Dlogging.level.io.github.jhipster.travis=ERROR
+        -Dlogging.level.org.zalando=OFF \
+        -Dlogging.level.io.github.jhipster=OFF \
+        -Dlogging.level.io.github.jhipster.sample=OFF \
+        -Dlogging.level.io.github.jhipster.travis=OFF
 elif [ -f "gradlew" ]; then
     ./gradlew test \
-        -Dlogging.level.io.github.jhipster.sample=ERROR \
-        -Dlogging.level.io.github.jhipster.travis=ERROR
-fi
-if [ -f "gulpfile.js" ]; then
-    gulp test --no-notification
+        -Dlogging.level.org.zalando=OFF \
+        -Dlogging.level.io.github.jhipster=OFF \
+        -Dlogging.level.io.github.jhipster.sample=OFF \
+        -Dlogging.level.io.github.jhipster.travis=OFF
 fi
 if [ -f "tsconfig.json" ]; then
-    yarn run test
+    yarn test
 fi
